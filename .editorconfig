@@ -1,0 +1,16 @@
+root = true
+
+[*]
+charset = utf-8
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+
+[*.sln]
+charset = utf-8-bom
+
+[*.{json,js,css,html,htm,jsx,tsx,ts,yml,yaml}]
+indent_size = 2
+
+[*.json]
+insert_final_newline = false
