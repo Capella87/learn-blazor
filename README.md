@@ -28,5 +28,7 @@ It can also make the repository clean because we don't have to include Bootstrap
 
 ### .NET 6
 
+* BlazingPizza ([Microsoft Learn repository](https://github.com/MicrosoftDocs/mslearn-interact-with-data-blazor-web-apps))
+
 ---
 Copyright © 2024 Capella87.
