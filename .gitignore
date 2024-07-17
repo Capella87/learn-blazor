@@ -364,3 +364,5 @@ FodyWeavers.xsd
 
 **/wwwroot/lib/
 **/wwwroot/bootstrap
+
+*.db
