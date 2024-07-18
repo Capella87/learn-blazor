@@ -25,6 +25,7 @@ It can also make the repository clean because we don't have to include Bootstrap
 
 * BlazorPractice
 * BlazorToDo
+* BlazingPizzaEight ([Microsoft Learn repository](https://github.com/MicrosoftDocs/mslearn-build-interactive-components-blazor))
 
 ### .NET 6
 
