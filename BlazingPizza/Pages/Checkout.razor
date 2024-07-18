@@ -3,13 +3,15 @@
 @using BlazingPizza.Services
 @using Microsoft.AspNetCore.Components.Forms
 
+@implements IDisposable
+
 @inject OrderState OrderState
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @layout MainLayout
 
 <div class="main">
-    <EditForm Model=Order.DeliveryAddress OnValidSubmit=PlaceOrder>
+    <EditForm EditContext=editContext OnValidSubmit=PlaceOrder>
         <div class="checkout-cols">
             <div class="checkout-order-details">
                 <h4>Review order</h4>
@@ -30,7 +32,7 @@
             </div>
         </div>
 
-        <button class="checkout-button btn btn-warning" disabled=@isSubmitting>
+        <button class="checkout-button btn btn-warning" type="submit" disabled=@isError>
             Place order
         </button>
         <DataAnnotationsValidator />
@@ -38,26 +40,22 @@
 </div>
 
 @code {
-    Order Order => OrderState.Order;
+    private EditContext editContext;
 
-    bool isSubmitting = false;
+    Order Order => OrderState.Order;
 
     bool isError = false;
 
     async Task PlaceOrder()
     {
-        isSubmitting = true;
         var response = await HttpClient.PostAsJsonAsync(NavigationManager.BaseUri + "orders", OrderState.Order);
         var newOrderId = await response.Content.ReadFromJsonAsync<int>();
         OrderState.ResetOrder();
-
-        // Redirect to the details page about the order that user just placed
         NavigationManager.NavigateTo($"myorders/{newOrderId}");
     }
 
     private async Task CheckSubmission(EditContext editContext)
     {
-        isSubmitting = true;
         var model = editContext.Model as Address;
         isError = string.IsNullOrWhiteSpace(model?.Name)
             || string.IsNullOrWhiteSpace(model?.Line1)
@@ -66,6 +64,27 @@
         {
             await PlaceOrder();
         }
-        isSubmitting = false;
+    }
+
+    private void ShowError()
+    {
+        isError = true;
+    }
+
+    private void HandleFieldChanged(object sender, FieldChangedEventArgs e)
+    {
+        isError = !editContext.Validate();
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        editContext = new(Order.DeliveryAddress);
+        editContext.OnFieldChanged += HandleFieldChanged;
+    }
+
+    public void Dispose()
+    {
+        editContext.OnFieldChanged -= HandleFieldChanged;
     }
 }
