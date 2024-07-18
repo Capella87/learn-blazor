@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.HttpLogging;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -7,6 +9,10 @@ builder.Services.AddHttpClient();
 builder.Services.AddDbContext<PizzaStoreContext>(options =>
     options.UseSqlite("Data Source=pizza.db"));
 builder.Services.AddScoped<OrderState>();
+
+builder.Services.AddHttpLogging(opts =>
+   opts.LoggingFields = HttpLoggingFields.RequestProperties);
+builder.Logging.AddFilter("Microsoft.AspNetCore.HttpLogging", LogLevel.Debug);
 
 var app = builder.Build();
 
@@ -31,6 +37,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseHttpLogging();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
