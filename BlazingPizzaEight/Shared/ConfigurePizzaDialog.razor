@@ -15,13 +15,13 @@
                 </span>
             </div>
         </form>
-
-        <div class="dialog-buttons">
+        <!-- Source: https://getbootstrap.com/docs/5.3/utilities/position/#position-values -->
+        <div class="dialog-buttons position-relative">
             <button class="btn btn-secondary mr-auto" @onclick="OnCancel">Cancel</button>
-            <span class="mr-center">
+            <div class="position-absolute top-50 start-50 translate-middle">
                 Price: <span class="price">@(Pizza.GetFormattedTotalPrice())</span>
-            </span>
-            <button class="btn btn-success ml-auto" @onclick="OnConfirm">Order ></button>
+            </div>
+            <button class="btn btn-success ms-auto" @onclick="OnConfirm">Order</button>
         </div>
     </div>
 </div>
