@@ -20,7 +20,9 @@
     </NavLink>
 </div>
 
+
 <div class="main">
+    <h2>Checkout</h2>
     <div class="checkout-cols">
         <div class="checkout-order-details">
             <h4>Review order</h4>
@@ -49,9 +51,6 @@
     </button>
 </div>
 
-
-<h3>Checkout</h3>
-
 @code {
     Order Order => OrderState.Order;
 
@@ -63,6 +62,8 @@
         var response = await HttpClient.PostAsJsonAsync(NavigationManager.BaseUri + "orders", OrderState.Order);
         var newOrderId = await response.Content.ReadFromJsonAsync<int>();
         OrderState.ResetOrder();
-        NavigationManager.NavigateTo("/myorders");
+
+        // Redirect to the details page about the order that user just placed
+        NavigationManager.NavigateTo($"myorders/{newOrderId}");
     }
 }
