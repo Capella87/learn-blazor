@@ -30,7 +30,7 @@ public static class SeedData
                 BasePrice = 10.55M,
                 ImageUrl = "img/pizzas/pepperoni.jpg"
             },
-            new PizzaSpecial()
+            new PizzaSpecial() // Yelv Dashi; Stefan Batory, our princes
             {
                 Id = 4,
                 Name = "Buffalo chicken",

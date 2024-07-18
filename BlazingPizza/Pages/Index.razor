@@ -1,6 +1,8 @@
 @page "/"
+@using BlazingPizza.Services;
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
+@inject OrderState OrderState
 
 <div class="main">
     <h1>Blazing Pizzas</h1>
@@ -9,10 +11,10 @@
         {
             @foreach (var special in specials)
             {
-                <li style="background-image: url('@special.ImageUrl')">
+                <li @onclick="@(() => OrderState.ShowConfigurePizzaDialog(special))" style="background-image: url('@special.ImageUrl')">
                     <div class="pizza-info">
                         <span class="title">@special.Name</span>
-                        @special.Description
+                            @special.Description
                         <span class="price">@special.GetFormattedBasePrice()</span>
                     </div>
                 </li>
@@ -21,9 +23,52 @@
     </ul>
 </div>
 
+<!-- This is component parameter for sharing information with other components -->
+@if (OrderState.ShowingConfigureDialog)
+{
+    <ConfigurePizzaDialog
+        Pizza="OrderState.ConfiguringPizza"
+        OnCancel="OrderState.CancelConfigurePizzaDialog"
+        OnConfirm="OrderState.ConfirmConfigurePizzaDialog" />
+}
+
+<div class="sidebar">
+    @if (order.Pizzas.Any())
+    {
+        <div class="order-contents">
+            <h2>Your Order</h2>
+
+            @foreach (var configuredPizza in order.Pizzas)
+            {
+                <div class="cart-item">
+                    <div class="title">@(configuredPizza.Size)" @configuredPizza.Special.Name</div>
+                    <div class="item-price">
+                        @configuredPizza.GetFormattedTotalPrice()
+                    </div>
+                    <a @onclick="@(() => OrderState.RemoveConfiguredPizza(configuredPizza))" class="delete-item">X</a>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-cart">Choose a pizza<br>to get started</div>
+    }
+
+    <div class="order-total @(order.Pizzas.Any() ? "" : "hidden")">
+        Total:
+        <span class="total-price">@order.GetFormattedTotalPrice()</span>
+        <a href="checkout" class="@(OrderState.Order.Pizzas.Count == 0 ? "btn btn-warning disabled" : "btn btn-warning")" role="button">
+            Order >
+        </a>
+    </div>
+</div>
+
 @code
 {
-    List<PizzaSpecial> specials = new();
+    List<PizzaSpecial> specials = new List<PizzaSpecial>();
+
+    Order order => OrderState.Order;
 
     protected override async Task OnInitializedAsync()
     {
