@@ -71,13 +71,35 @@
         specials = await HttpClient.GetFromJsonAsync<List<PizzaSpecial>>(
             $"{NavigationManager.BaseUri}specials");
 
-    async Task RemovePizzaConfirmation(Pizza pizzaToBeRemoved)
+    //     It was pure JavaScript before
+    // async Task RemovePizzaConfirmation(Pizza pizzaToBeRemoved)
+    // {
+    //     if (await JavaScript.InvokeAsync<bool>(
+    //     "confirm",
+    //     $"""Do you want to remove the "{pizzaToBeRemoved.Special!.Name}" from your order?"""))
+    //     {
+    //         OrderState.RemoveConfiguredPizza(pizzaToBeRemoved);
+    //     }
+    // }
+
+    async Task RemovePizzaConfirmation(Pizza removePizza)
     {
-        if (await JavaScript.InvokeAsync<bool>(
-        "confirm",
-        $"""Do you want to remove the "{pizzaToBeRemoved.Special!.Name}" from your order?"""))
+        var messageParams = new
         {
-            OrderState.RemoveConfiguredPizza(pizzaToBeRemoved);
+            title = "Remove Pizza?",
+            text = $"""Do you want to remove the "{removePizza.Special!.Name}" from your order?""",
+            icon = "warning",
+            buttons = new
+            {
+                abort = new { text = "No, leave it in my order", value = false },
+                confirm = new { text = "Yes, remove pizza", value = true }
+            },
+            dangerMode = true
+        };
+
+        if (await JavaScript.InvokeAsync<bool>("Swal", messageParams))
+        {
+            OrderState.RemoveConfiguredPizza(removePizza);
         }
     }
 }
