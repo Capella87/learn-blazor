@@ -366,3 +366,5 @@ FodyWeavers.xsd
 **/wwwroot/bootstrap
 
 *.db
+*.db-shm
+*.db-wal
