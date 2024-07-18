@@ -3,6 +3,7 @@
 @inject HttpClient HttpClient
 @inject NavigationManager NavigationManager
 @inject OrderState OrderState
+@inject IJSRuntime JavaScript
 
 <div class="main">
     <ul class="pizza-cards">
@@ -36,8 +37,10 @@
             @foreach (var configuredPizza in order.Pizzas)
             {
                 <div class="cart-item">
-                    <a @onclick="@(() => OrderState.RemoveConfiguredPizza(configuredPizza))"
-                        class="delete-item">❌</a>
+                    <!--Source: https://stackoverflow.com/questions/68270999/keep-close-button-in-upper-right-corner-even-when-modal-scales -->
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-2" aria-label="Close"
+                        @onclick="@(async () => await RemovePizzaConfirmation(configuredPizza))">
+                    </button>
                     <div class="title">@(configuredPizza.Size)" @configuredPizza.Special!.Name</div>
                     <div class="item-price">
                         @configuredPizza.GetFormattedTotalPrice()
@@ -67,4 +70,14 @@
     protected override async Task OnInitializedAsync() =>
         specials = await HttpClient.GetFromJsonAsync<List<PizzaSpecial>>(
             $"{NavigationManager.BaseUri}specials");
+
+    async Task RemovePizzaConfirmation(Pizza pizzaToBeRemoved)
+    {
+        if (await JavaScript.InvokeAsync<bool>(
+        "confirm",
+        $"""Do you want to remove the "{pizzaToBeRemoved.Special!.Name}" from your order?"""))
+        {
+            OrderState.RemoveConfiguredPizza(pizzaToBeRemoved);
+        }
+    }
 }
